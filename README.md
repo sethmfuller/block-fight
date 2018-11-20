@@ -36,5 +36,5 @@
 
 ## Libraries:
 
-* [Python engine](www.pygame.org)
-* [Physics engine](www.pymonk.org)
+* [Python engine](https://www.pygame.org/news)
+* [Physics engine](http://www.pymunk.org/en/latest/)
