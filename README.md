@@ -11,3 +11,30 @@
 - Can walk and jump
 - Blocks are sent a certain distance when knocked from a player
 - Could have platforms with automated turrets
+
+
+##
+
+- Character is a tree of blocks
+
+    - Abstract Block class
+        - Defensive blocks (hit box)
+        - Offensive blocks
+            - Weapons
+            - Punches
+
+- Criteria
+    - Head (hit 10 times before loose)
+    - Body (hit 25 time before loose)
+
+- Basic actions
+    - Walk
+    - Move arms
+    - Punch (move-arms/punnch)
+    - Kick (walk/kick)
+    - (later shoot)
+
+## Libraries:
+
+* [Python engine](https://www.pygame.org/news)
+* [Physics engine](http://www.pymunk.org/en/latest/)
