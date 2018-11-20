@@ -33,3 +33,8 @@
     - Punch (move-arms/punnch)
     - Kick (walk/kick)
     - (later shoot)
+
+## Libraries:
+
+* [Python engine](www.pygame.org)
+* [Physics engine](www.pymonk.org)
