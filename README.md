@@ -11,3 +11,14 @@
 - Can walk and jump
 - Blocks are sent a certain distance when knocked from a player
 - Could have platforms with automated turrets
+
+
+##
+
+- Character is a tree of blocks
+
+    - Abstract Block class
+        - Defensive blocks
+        - Offensive blocks
+            - Weapons
+            - Punches
