@@ -18,7 +18,18 @@
 - Character is a tree of blocks
 
     - Abstract Block class
-        - Defensive blocks
+        - Defensive blocks (hit box)
         - Offensive blocks
             - Weapons
             - Punches
+
+- Criteria
+    - Head (hit 10 times before loose)
+    - Body (hit 25 time before loose)
+
+- Basic actions
+    - Walk
+    - Move arms
+    - Punch (move-arms/punnch)
+    - Kick (walk/kick)
+    - (later shoot)
