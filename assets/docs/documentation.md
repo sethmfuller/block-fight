@@ -1,3 +1,1 @@
-## Documentation
-
-# block-fight
+## block-fight - Documentation
