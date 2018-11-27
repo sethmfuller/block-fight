@@ -16,4 +16,4 @@
 ### Iteration 4
 
     * Add arms and head
-    * Add different kinds of blocks (defensive block and offensive blocks)
+    * Add different kinds of blocks (defensive blocks and offensive blocks)
