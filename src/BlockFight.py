@@ -25,6 +25,20 @@ display_size = (600, 600)
 import pymunk as pm
 from pymunk import Vec2d
 
+def drawcircle(image, colour, origin, radius, width=0):
+    if width == 0:
+        pygame.draw.circle(image, colour, origin, int(radius))
+    else:
+        if radius > 65534 / 5:
+            radius = 65534 / 5
+        circle = pygame.Surface([radius * 2 + width, radius * 2 + width]).convert_alpha()
+        circle.fill([0, 0, 0, 0])
+        pygame.draw.circle(circle, colour, [circle.get_width() / 2, circle.get_height() / 2], radius + (width / 2))
+        if int(radius - (width / 2)) > 0:
+            pygame.draw.circle(circle, [0, 0, 0, 0], [circle.get_width() / 2, circle.get_height() / 2],
+                               abs(int(radius - (width / 2))))
+        image.blit(circle, [origin[0] - (circle.get_width() / 2), origin[1] - (circle.get_height() / 2)])
+
 
 def main():
     pygame.init()
@@ -48,6 +62,31 @@ def main():
     space.damping = 0.999  # to prevent it from blowing up.
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
+    # Create bodies
+    bodies = []
+    offset_y = height / 2
+    mass = 10
+    radius = 25
+    moment = pm.moment_for_circle(mass, 0, radius, (0, 0))
+
+    # Create body
+    body = pm.Body(mass, moment)
+    body.position = (width/2, -125 + offset_y)
+    body.start_position = Vec2d(body.position)
+
+    # Create shape
+    shape = pm.Circle(body, radius)
+    shape.elasticity = 0.9999999
+    shape.color = THECOLORS["green"]
+
+    # Create joint
+    pj = pm.PinJoint(space.static_body, body, (width/2, 125 + offset_y), (0, 0))
+
+    # Add objects to space
+    space.add(body, shape, pj)
+
+    bodies.append(body)
+
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -67,6 +106,11 @@ def main():
             p1 = to_pygame(pv1)
             p2 = to_pygame(pv2)
             pygame.draw.aalines(screen, THECOLORS["lightgray"], False, [p1, p2])
+
+        for box in space.shapes:
+            p = to_pygame(box.body.position)
+            drawcircle(screen, box.color, p, int(box.radius), 0)
+            # pygame.draw.circle(screen, ball.color, p, int(ball.radius), 0)
 
         ### Update physics
         fps = 50
