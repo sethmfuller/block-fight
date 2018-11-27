@@ -1,5 +1,7 @@
 # Block Fight
 
+## Due: Tuesday (11/4/2018)
+
 ## High-Level Requirements
 
 - Two Players
