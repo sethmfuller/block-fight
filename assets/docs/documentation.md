@@ -7,9 +7,13 @@
 
 ### Iteration 2
 
-    * Add second player
+    * Make legs move with standard keyboard input
 
 ### Iteration 3
+
+    * Add second player
+
+### Iteration 4
 
     * Added arms and head
     * Add different kinds of blocks (defensive block and offensive blocks)
