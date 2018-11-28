@@ -26,11 +26,13 @@ import pymunk as pm
 from pymunk import Vec2d
 import math
 
-class PymunkSprite(pm.Body):
-    def __init__(self, image, mass, moment):
-        pm.Body.__init__(self, mass, moment)
+class PymunkSprite():
+    def __init__(self, space, image, body, shape):
+        self.body = body
+        self.shape = shape
         self.imageMaster = pygame.image.load(image).convert()
         self.imageMaster.set_colorkey(self.imageMaster.get_at((0, 0)))
+        space.add(body, shape)
 
     def flipy(self, y):
         """Small hack to convert chipmunk physics to pygame coordinates"""
@@ -38,17 +40,23 @@ class PymunkSprite(pm.Body):
 
     def update(self, screen):
         # image draw
-        p = self.position
+        p = self.shape.body.position
         p = Vec2d(p.x, self.flipy(p.y))
 
         # we need to rotate 180 degrees because of the y coordinate flip
-        angle_degrees = math.degrees(self.angle) + 180
+        angle_degrees = math.degrees(self.shape.body.angle) + 180
         rotated_logo_img = pygame.transform.rotate(self.imageMaster, angle_degrees)
 
         offset = Vec2d(rotated_logo_img.get_size()) / 2.
         p = p - offset
 
         screen.blit(rotated_logo_img, p)
+
+        #Debug drawing
+        ps = [p.rotated(self.shape.body.angle) + self.shape.body.position for p in self.shape.get_vertices()]
+        ps = [(p.x, self.flipy(p.y)) for p in ps]
+        ps += [ps[0]]
+        pygame.draw.lines(screen, THECOLORS["red"], False, ps, 1)
 
 def drawcircle(image, colour, origin, radius, width=0):
     if width == 0:
@@ -100,7 +108,8 @@ def main():
     body.start_position = Vec2d(body.position)
 
     # Create shape
-    shape = pm.Circle(body, radius)
+    vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
+    shape = pm.Poly(body, vs)
     shape.elasticity = 0.9999999
     shape.color = THECOLORS["green"]
 
@@ -108,7 +117,8 @@ def main():
     pj = pm.PinJoint(space.static_body, body, (width/2, 125 + offset_y), (0, 0))
 
     # Add objects to space
-    space.add(body, shape, pj)
+    sprite = PymunkSprite(space, "../assets/img/bodyBox.png", body, shape)
+    space.add(pj)
 
     bodies.append(body)
 
@@ -116,10 +126,16 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                running = False
+            elif event.type == KEYDOWN and event.key == K_f:
+                sprite.body.apply_impulse_at_local_point(Vec2d.unit() * 40000, (-100, 0))
 
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
         mouse_body.position = p
+
+
 
         ### Clear screen
         screen.fill(THECOLORS["white"])
@@ -134,7 +150,8 @@ def main():
 
         for box in space.shapes:
             p = to_pygame(box.body.position)
-            drawcircle(screen, box.color, p, int(box.radius), 0)
+            sprite.update(screen)
+            #drawcircle(screen, box.color, p, int(box.radius), 0)
             # pygame.draw.circle(screen, ball.color, p, int(ball.radius), 0)
 
         ### Update physics
