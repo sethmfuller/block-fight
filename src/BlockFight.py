@@ -65,10 +65,10 @@ def main():
         floor.friction = 0.5
         space.add(floor)
 
-        ### Clear screen
+        # Clear screen
         screen.fill(THECOLORS["white"])
 
-        ### Draw stuff
+        # Draw stuff
         for c in space.constraints:
             pv1 = c.a.position + c.anchor_a
             pv2 = c.b.position + c.anchor_b
