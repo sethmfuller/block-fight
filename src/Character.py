@@ -49,3 +49,21 @@ class Body(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", body, shape)
+
+class OffensiveBlock(PymunkSprite):
+    def __init__(self, space, screen):
+        vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
+        mass = 10
+        moment = pm.moment_for_poly(mass, vs)
+        body = pm.Body(mass, moment)
+        shape = pm.Poly(body, vs)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", body, shape)
+
+class DefensiveBlock(PymunkSprite):
+    def __init__(self, space, screen):
+        vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
+        mass = 10
+        moment = pm.moment_for_poly(mass, vs)
+        body = pm.Body(mass, moment)
+        shape = pm.Poly(body, vs)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", body, shape)

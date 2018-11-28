@@ -64,10 +64,7 @@ def main():
 
     # Add objects to space
     sprite = Character.Body(space, screen)
-
-    # Create joint
-    pj = pm.PinJoint(space.static_body, sprite.body, (width/2, height/2), (0, 0))
-    space.add(pj)
+    sprite.body.position = (50,50)
 
     while running:
         for event in pygame.event.get():
@@ -82,7 +79,9 @@ def main():
         p = from_pygame(Vec2d(mpos))
         mouse_body.position = p
 
-
+        static_lines = [pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)]
+        for l in static_lines:
+            l.friction = 0.5
 
         ### Clear screen
         screen.fill(THECOLORS["white"])
