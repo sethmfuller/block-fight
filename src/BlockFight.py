@@ -61,9 +61,9 @@ def main():
         p = from_pygame(Vec2d(mpos))
         mouse_body.position = p
 
-        static_lines = [pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)]
-        for l in static_lines:
-            l.friction = 0.5
+        floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
+        floor.friction = 0.5
+        space.add(floor)
 
         ### Clear screen
         screen.fill(THECOLORS["white"])
