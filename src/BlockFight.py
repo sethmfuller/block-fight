@@ -45,17 +45,14 @@ def main():
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
-    sprite = Character.Body(space, screen)
-    sprite.body.position = (50,50)
-
+    sprite = Character.Skeleton(space, screen)
+    sprite.setPosition(200, 50)
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
-            elif event.type == KEYDOWN and event.key == K_f:
-                sprite.body.apply_impulse_at_local_point(Vec2d.unit() * 40000, (-100, 0))
 
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
@@ -76,8 +73,7 @@ def main():
             p2 = to_pygame(pv2)
             pygame.draw.aalines(screen, THECOLORS["lightgray"], False, [p1, p2])
 
-        for box in space.shapes:
-            sprite.update()
+        sprite.update()
 
         # Update physics
         fps = 50

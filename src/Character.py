@@ -34,7 +34,7 @@ class PymunkSprite():
 
         self.screen.blit(rotated_logo_img, p)
 
-        #Debug drawing
+        # Debug drawing
         ps = [p.rotated(self.shape.body.angle) + self.shape.body.position for p in self.shape.get_vertices()]
         ps = [(p.x, self.flipy(p.y)) for p in ps]
         ps += [ps[0]]
@@ -49,21 +49,54 @@ class Body(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", body, shape)
+        self.imageMaster.set_colorkey((0, 0, 0))
+
 
 class OffensiveBlock(PymunkSprite):
     def __init__(self, space, screen):
-        vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
+        vs = [(-25, 25), (25, 25), (25, -25), (-25, -25)]
         mass = 10
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", body, shape)
 
+
 class DefensiveBlock(PymunkSprite):
     def __init__(self, space, screen):
-        vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
+        vs = [(-20, 20), (20, 20), (20, -20), (-20, -20)]
         mass = 10
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", body, shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", body, shape)
+
+
+class Skeleton():
+    def __init__(self, space, screen, x=0, y=0):
+
+        self.torso = Body(space, screen)
+        self.setPosition(x, y)
+
+        self.head = DefensiveBlock(space, screen)
+        self.head.body.position.x = self.torso.body.position.x
+        self.head.body.position.y = self.torso.body.position.y + 25
+
+        self.neck = pm.PinJoint(self.torso.body, self.head.body, (0, 50))
+        self.components = [
+            self.torso,
+            self.head
+        ]
+
+        self.fist = OffensiveBlock(space, screen)
+        self.fist.body.position = self.torso.body.position + (50, 25)
+        self.arm = pm.PinJoint(self.fist.body, self.torso.body, (0, 0), (0, 25))
+
+        space.add(self.neck, self.arm)
+
+    def setPosition(self, x, y):
+        self.torso.body.position = (x, y)
+
+    def update(self):
+        self.torso.update()
+        self.head.update()
