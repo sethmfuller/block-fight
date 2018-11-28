@@ -2,43 +2,25 @@
 # File: BlockFight.py
 # Date: 11/27/2018
 
+import sys
+import pygame
+from pygame.locals import *
+from pygame.color import *
+import pymunk as pm
+from pymunk import Vec2d
+import Character
+
+
 __docformat__ = "reStructuredText"
-
-import sys, random
-import os
-
 description = """
 ---- Block File ----
 A Cool Game
 """
 
+
 is_interactive = False
 display_flags = 0
-
-### We must set OS env before the pygame imports..
-import pygame
-from pygame.locals import *
-from pygame.color import *
-
 display_size = (600, 600)
-
-import pymunk as pm
-from pymunk import Vec2d
-import Character
-
-def drawcircle(image, colour, origin, radius, width=0):
-    if width == 0:
-        pygame.draw.circle(image, colour, origin, int(radius))
-    else:
-        if radius > 65534 / 5:
-            radius = 65534 / 5
-        circle = pygame.Surface([radius * 2 + width, radius * 2 + width]).convert_alpha()
-        circle.fill([0, 0, 0, 0])
-        pygame.draw.circle(circle, colour, [circle.get_width() / 2, circle.get_height() / 2], radius + (width / 2))
-        if int(radius - (width / 2)) > 0:
-            pygame.draw.circle(circle, [0, 0, 0, 0], [circle.get_width() / 2, circle.get_height() / 2],
-                               abs(int(radius - (width / 2))))
-        image.blit(circle, [origin[0] - (circle.get_width() / 2), origin[1] - (circle.get_height() / 2)])
 
 
 def main():
@@ -56,7 +38,7 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
-    ### Physics stuff
+    # Physics stuff
     space = pm.Space()
     space.gravity = (0.0, -1900.0)
     space.damping = 0.999  # to prevent it from blowing up.
@@ -97,7 +79,7 @@ def main():
         for box in space.shapes:
             sprite.update()
 
-        ### Update physics
+        # Update physics
         fps = 50
         iterations = 25
         dt = 1.0 / float(fps) / float(iterations)
