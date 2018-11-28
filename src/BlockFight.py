@@ -24,39 +24,7 @@ display_size = (600, 600)
 
 import pymunk as pm
 from pymunk import Vec2d
-import math
-
-class PymunkSprite():
-    def __init__(self, space, image, body, shape):
-        self.body = body
-        self.shape = shape
-        self.imageMaster = pygame.image.load(image).convert()
-        self.imageMaster.set_colorkey(self.imageMaster.get_at((0, 0)))
-        space.add(body, shape)
-
-    def flipy(self, y):
-        """Small hack to convert chipmunk physics to pygame coordinates"""
-        return -y + 600
-
-    def update(self, screen):
-        # image draw
-        p = self.shape.body.position
-        p = Vec2d(p.x, self.flipy(p.y))
-
-        # we need to rotate 180 degrees because of the y coordinate flip
-        angle_degrees = math.degrees(self.shape.body.angle) + 180
-        rotated_logo_img = pygame.transform.rotate(self.imageMaster, angle_degrees)
-
-        offset = Vec2d(rotated_logo_img.get_size()) / 2.
-        p = p - offset
-
-        screen.blit(rotated_logo_img, p)
-
-        #Debug drawing
-        ps = [p.rotated(self.shape.body.angle) + self.shape.body.position for p in self.shape.get_vertices()]
-        ps = [(p.x, self.flipy(p.y)) for p in ps]
-        ps += [ps[0]]
-        pygame.draw.lines(screen, THECOLORS["red"], False, ps, 1)
+import Character
 
 def drawcircle(image, colour, origin, radius, width=0):
     if width == 0:
@@ -87,7 +55,6 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
-    font = pygame.font.Font(None, 16)
 
     ### Physics stuff
     space = pm.Space()
@@ -95,32 +62,12 @@ def main():
     space.damping = 0.999  # to prevent it from blowing up.
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
-    # Create bodies
-    bodies = []
-    offset_y = height / 2
-    mass = 10
-    radius = 25
-    moment = pm.moment_for_circle(mass, 0, radius, (0, 0))
-
-    # Create body
-    body = pm.Body(mass, moment)
-    body.position = (width/2, -125 + offset_y)
-    body.start_position = Vec2d(body.position)
-
-    # Create shape
-    vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
-    shape = pm.Poly(body, vs)
-    shape.elasticity = 0.9999999
-    shape.color = THECOLORS["green"]
+    # Add objects to space
+    sprite = Character.Body(space, screen)
 
     # Create joint
-    pj = pm.PinJoint(space.static_body, body, (width/2, 125 + offset_y), (0, 0))
-
-    # Add objects to space
-    sprite = PymunkSprite(space, "../assets/img/bodyBox.png", body, shape)
+    pj = pm.PinJoint(space.static_body, sprite.body, (width/2, height/2), (0, 0))
     space.add(pj)
-
-    bodies.append(body)
 
     while running:
         for event in pygame.event.get():
@@ -149,10 +96,7 @@ def main():
             pygame.draw.aalines(screen, THECOLORS["lightgray"], False, [p1, p2])
 
         for box in space.shapes:
-            p = to_pygame(box.body.position)
-            sprite.update(screen)
-            #drawcircle(screen, box.color, p, int(box.radius), 0)
-            # pygame.draw.circle(screen, ball.color, p, int(ball.radius), 0)
+            sprite.update()
 
         ### Update physics
         fps = 50
