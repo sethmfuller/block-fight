@@ -20,7 +20,7 @@ A Cool Game
 
 is_interactive = False
 display_flags = 0
-display_size = (600, 600)
+display_size = (800, 800)
 
 
 
@@ -48,9 +48,19 @@ def main():
     # Add objects to space
     playerOne = Character.PlayerOne(space, screen)
 
-    floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
+    floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.5)
     floor.friction = 0.5
-    space.add(floor)
+
+    leftWall = pm.Segment(space.static_body, (0, 0), (0, height), 0.5)
+    leftWall.friction = 0.5
+
+    roof = pm.Segment(space.static_body, (0, height), (width, height), 0.5)
+    roof.friction = 0.5
+
+    rightWall = pm.Segment(space.static_body, (width, 0), (width, height), 0.5)
+    rightWall.friction = 0.5
+
+    space.add(floor, leftWall, roof, rightWall)
 
     while running:
         for event in pygame.event.get():
@@ -62,6 +72,10 @@ def main():
                 playerOne.kickRFoot()
             elif event.type == KEYDOWN and event.key == K_d:
                 playerOne.reverseKickRFoot()
+            elif event.type == KEYDOWN and event.key == K_r:
+                playerOne.kickLFoot()
+            elif event.type == KEYDOWN and event.key == K_e:
+                playerOne.reverseKickLFoot()
 
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
