@@ -23,6 +23,7 @@ display_flags = 0
 display_size = (600, 600)
 
 
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode(display_size, display_flags)
@@ -45,8 +46,12 @@ def main():
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
-    sprite = Character.Skeleton(space, screen)
-    sprite.setPosition(200, 50)
+    sprite = Character.Skeleton(space, screen, 300, 350)
+
+    floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
+    floor.friction = 0.5
+    space.add(floor)
+
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -57,10 +62,6 @@ def main():
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
         mouse_body.position = p
-
-        floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
-        floor.friction = 0.5
-        space.add(floor)
 
         # Clear screen
         screen.fill(THECOLORS["white"])

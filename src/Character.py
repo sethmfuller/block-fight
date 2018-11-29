@@ -8,13 +8,12 @@ import math
 
 
 class PymunkSprite():
-    def __init__(self, space, screen, image, body, shape):
-        self.body = body
+    def __init__(self, space, screen, image, shape):
         self.shape = shape
         self.screen = screen
         self.imageMaster = pygame.image.load(image).convert()
         self.imageMaster.set_colorkey(self.imageMaster.get_at((0, 0)))
-        space.add(body, shape)
+        space.add(shape.body, shape)
 
     def flipy(self, y):
         """Small hack to convert chipmunk physics to pygame coordinates"""
@@ -48,8 +47,11 @@ class Body(PymunkSprite):
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", body, shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", shape)
         self.imageMaster.set_colorkey((0, 0, 0))
+        self.armConnection = pm.Body(mass, moment)
+        self.legConnection = pm.Body(mass, moment)
+        space.add(self.armConnection, self.legConnection)
 
 
 class OffensiveBlock(PymunkSprite):
@@ -59,7 +61,7 @@ class OffensiveBlock(PymunkSprite):
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", body, shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", shape)
 
 
 class DefensiveBlock(PymunkSprite):
@@ -69,34 +71,49 @@ class DefensiveBlock(PymunkSprite):
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", body, shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
 
 
 class Skeleton():
     def __init__(self, space, screen, x=0, y=0):
-
+        self.body = pm.Body(10, 1000)
         self.torso = Body(space, screen)
         self.setPosition(x, y)
+        self.space = space
+        self.screen = screen
 
         self.head = DefensiveBlock(space, screen)
-        self.head.body.position.x = self.torso.body.position.x
-        self.head.body.position.y = self.torso.body.position.y + 25
+        self.head.shape.body.position = self.torso.shape.body.position + (0, 100)
 
-        self.neck = pm.PinJoint(self.torso.body, self.head.body, (0, 50))
-        self.components = [
-            self.torso,
-            self.head
-        ]
+        self.neck = pm.PinJoint(self.torso.shape.body, self.head.shape.body, (0, 50), (0, 25))
+        self.neck.distance = 50
 
         self.fist = OffensiveBlock(space, screen)
-        self.fist.body.position = self.torso.body.position + (50, 25)
-        self.arm = pm.PinJoint(self.fist.body, self.torso.body, (0, 0), (0, 25))
+        self.fist.shape.body.position.x = self.torso.shape.body.position.x + 50
+        self.fist.shape.body.position.y = self.torso.shape.body.position.y + 50
+        self.arm = pm.PinJoint(self.fist.shape.body, self.torso.shape.body, (0, 0), (0, 50))
+        self.arm.distance = 50
 
-        space.add(self.neck, self.arm)
+        self.foot = OffensiveBlock(space, screen)
+        self.foot.shape.body.position = self.torso.shape.body.position + (0, -50)
+        self.leg = pm.PinJoint(self.foot.shape.body, self.torso.shape.body, (0, 25), (0, -50))
+        self.leg.distance = 50
+
+        self.components = [
+            self.torso,
+            self.head,
+            self.fist,
+            self.foot
+        ]
+
+        for component in self.components:
+            component.group = 1
+
+        space.add(self.neck, self.arm, self.leg)
 
     def setPosition(self, x, y):
-        self.torso.body.position = (x, y)
+        self.torso.shape.body.position = (x, y)
 
     def update(self):
-        self.torso.update()
-        self.head.update()
+        for component in self.components:
+            component.update()
