@@ -73,47 +73,22 @@ class DefensiveBlock(PymunkSprite):
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
 
-
-class Skeleton():
-    def __init__(self, space, screen, x=0, y=0):
-        self.body = pm.Body(10, 1000)
-        self.torso = Body(space, screen)
-        self.setPosition(x, y)
+class Test():
+    def __init__(self, space, screen):
         self.space = space
         self.screen = screen
+        self.coreBody = pm.Body(10, 1000)
+        self.coreBody.position = (100, 100)
 
-        self.head = DefensiveBlock(space, screen)
-        self.head.shape.body.position = self.torso.shape.body.position + (0, 100)
+        self.torso = Body(space, screen)
+        self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi/10, math.pi/10)
+        self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
+        self.torsoLocationTie.distance = 0
+        self.torso.shape.body.position = (100, 100)
+        self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 10000, (10, -10))
 
-        self.neck = pm.PinJoint(self.torso.shape.body, self.head.shape.body, (0, 50), (0, 25))
-        self.neck.distance = 50
 
-        self.fist = OffensiveBlock(space, screen)
-        self.fist.shape.body.position.x = self.torso.shape.body.position.x + 50
-        self.fist.shape.body.position.y = self.torso.shape.body.position.y + 50
-        self.arm = pm.PinJoint(self.fist.shape.body, self.torso.shape.body, (0, 0), (0, 50))
-        self.arm.distance = 50
-
-        self.foot = OffensiveBlock(space, screen)
-        self.foot.shape.body.position = self.torso.shape.body.position + (0, -50)
-        self.leg = pm.PinJoint(self.foot.shape.body, self.torso.shape.body, (0, 25), (0, -50))
-        self.leg.distance = 50
-
-        self.components = [
-            self.torso,
-            self.head,
-            self.fist,
-            self.foot
-        ]
-
-        for component in self.components:
-            component.group = 1
-
-        space.add(self.neck, self.arm, self.leg)
-
-    def setPosition(self, x, y):
-        self.torso.shape.body.position = (x, y)
+        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie)
 
     def update(self):
-        for component in self.components:
-            component.update()
+        self.torso.update()

@@ -46,7 +46,7 @@ def main():
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
-    sprite = Character.Skeleton(space, screen, 300, 350)
+    sprite = Character.Test(space, screen)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
     floor.friction = 0.5
@@ -65,14 +65,6 @@ def main():
 
         # Clear screen
         screen.fill(THECOLORS["white"])
-
-        # Draw stuff
-        for c in space.constraints:
-            pv1 = c.a.position + c.anchor_a
-            pv2 = c.b.position + c.anchor_b
-            p1 = to_pygame(pv1)
-            p2 = to_pygame(pv2)
-            pygame.draw.aalines(screen, THECOLORS["lightgray"], False, [p1, p2])
 
         sprite.update()
 
