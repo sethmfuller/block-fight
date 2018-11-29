@@ -46,7 +46,7 @@ def main():
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
-    sprite = Character.Test(space, screen)
+    sprite = Character.PlayerOne(space, screen)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
     floor.friction = 0.5

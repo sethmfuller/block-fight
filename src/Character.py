@@ -6,6 +6,15 @@ import pymunk as pm
 from pymunk import Vec2d
 import math
 
+COLLISION_BODY = 0
+COLLISION_OFFENSE = 1
+COLLISION_DEFENSE = 2
+
+collisionGroups = {
+    "PLAYER1": 1,
+    "PLAYER2": 2
+}
+
 
 class PymunkSprite():
     def __init__(self, space, screen, image, shape):
@@ -49,9 +58,11 @@ class Body(PymunkSprite):
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", shape)
         self.imageMaster.set_colorkey((0, 0, 0))
-        self.armConnection = pm.Body(mass, moment)
-        self.legConnection = pm.Body(mass, moment)
-        space.add(self.armConnection, self.legConnection)
+        self.shape.collision_type = COLLISION_BODY
+        self._body = property(self.__getBody)
+
+    def __getBody(self):
+        return self.shape.body
 
 
 class OffensiveBlock(PymunkSprite):
@@ -62,6 +73,11 @@ class OffensiveBlock(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", shape)
+        self.shape.collision_type = COLLISION_OFFENSE
+        self._body = property(self.__getBody)
+
+    def __getBody(self):
+        return self.shape.body
 
 
 class DefensiveBlock(PymunkSprite):
@@ -72,8 +88,14 @@ class DefensiveBlock(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
+        self.shape.collision_type = COLLISION_DEFENSE
+        self._body = property(self.__getBody)
 
-class Test():
+    def __getBody(self):
+        return self.shape.body
+
+
+class PlayerOne():
     def __init__(self, space, screen):
         self.space = space
         self.screen = screen
@@ -82,24 +104,29 @@ class Test():
         self.coreBody.position = pos
 
         self.torso = Body(space, screen)
-        self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi/10, math.pi/10)
+        self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
+                                                      math.pi / 10)
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
         self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 10000, (10, -10))
 
         self.rFoot = OffensiveBlock(self.space, self.screen)
+        self.rFoot.shape.friction = 1.5
         self.rFoot.shape.body.position = self.torso.shape.body.position + (-25, -100)
         self.rLeg = pm.PinJoint(self.torso.shape.body, self.rFoot.shape.body, (0, -50), (0, 25))
         self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 125, 1000, 1)
+        self.rFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFoot.shape.body, 0, 0)
 
         self.lFoot = OffensiveBlock(self.space, self.screen)
+        self.lFoot.shape.friction = 1.5
         self.lFoot.shape.body.position = self.torso.shape.body.position + (25, -100)
         self.lLeg = pm.PinJoint(self.torso.shape.body, self.lFoot.shape.body, (0, -50), (0, 25))
         self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 125, 1000, 1)
+        self.lFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFoot.shape.body, 0, 0)
 
         self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie, self.rLeg, self.rLegDownwardForce,
-                       self.lLeg, self.lLegDownwardForce)
+                       self.lLeg, self.lLegDownwardForce, self.rFootRotationLimit, self.lFootRotationLimit)
 
     def update(self):
         self.torso.update()
