@@ -77,18 +77,31 @@ class Test():
     def __init__(self, space, screen):
         self.space = space
         self.screen = screen
+        pos = (100, 200)
         self.coreBody = pm.Body(10, 1000)
-        self.coreBody.position = (100, 100)
+        self.coreBody.position = pos
 
         self.torso = Body(space, screen)
         self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi/10, math.pi/10)
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
-        self.torso.shape.body.position = (100, 100)
+        self.torso.shape.body.position = pos
         self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 10000, (10, -10))
 
+        self.rFoot = OffensiveBlock(self.space, self.screen)
+        self.rFoot.shape.body.position = self.torso.shape.body.position + (-25, -100)
+        self.rLeg = pm.PinJoint(self.torso.shape.body, self.rFoot.shape.body, (0, -50), (0, 25))
+        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 125, 1000, 1)
 
-        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie)
+        self.lFoot = OffensiveBlock(self.space, self.screen)
+        self.lFoot.shape.body.position = self.torso.shape.body.position + (25, -100)
+        self.lLeg = pm.PinJoint(self.torso.shape.body, self.lFoot.shape.body, (0, -50), (0, 25))
+        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 125, 1000, 1)
+
+        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie, self.rLeg, self.rLegDownwardForce,
+                       self.lLeg, self.lLegDownwardForce)
 
     def update(self):
         self.torso.update()
+        self.rFoot.update()
+        self.lFoot.update()
