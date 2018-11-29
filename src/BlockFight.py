@@ -46,7 +46,7 @@ def main():
     mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
-    sprite = Character.PlayerOne(space, screen)
+    playerOne = Character.PlayerOne(space, screen)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.0)
     floor.friction = 0.5
@@ -58,6 +58,10 @@ def main():
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
+            elif event.type == KEYDOWN and event.key == K_f:
+                playerOne.kickRFoot()
+            elif event.type == KEYDOWN and event.key == K_d:
+                playerOne.reverseKickRFoot()
 
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
@@ -66,7 +70,7 @@ def main():
         # Clear screen
         screen.fill(THECOLORS["white"])
 
-        sprite.update()
+        playerOne.update()
 
         # Update physics
         fps = 50
