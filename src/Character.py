@@ -136,3 +136,57 @@ class PlayerOne():
 
     def reverseKickLFoot(self):
         self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
+
+class PlayerTwo():
+    def __init__(self, space, screen):
+        self.space = space
+        self.screen = screen
+        width, height = screen.get_size()
+        pos = (100, height/4)
+        self.coreBody = pm.Body(10, 1000)
+        self.coreBody.position = pos
+
+        self.torso = Body(space, screen)
+        self.torso.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
+        self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
+                                                      math.pi / 10)
+        self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
+        self.torsoLocationTie.distance = 0
+        self.torso.shape.body.position = pos
+        #self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
+
+        self.rFoot = OffensiveBlock(self.space, self.screen)
+        self.rFoot.shape.friction = 1.5
+        self.rFoot.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
+        self.rFoot.shape.body.position = self.torso.shape.body.position + (-25, -100)
+        self.rLeg = pm.PinJoint(self.torso.shape.body, self.rFoot.shape.body, (0, -50), (0, 25))
+        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 125, 750, 1)
+        self.rFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFoot.shape.body, -math.pi/5, math.pi/5)
+
+        self.lFoot = OffensiveBlock(self.space, self.screen)
+        self.lFoot.shape.friction = 1.5
+        self.lFoot.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
+        self.lFoot.shape.body.position = self.torso.shape.body.position + (25, -100)
+        self.lLeg = pm.PinJoint(self.torso.shape.body, self.lFoot.shape.body, (0, -50), (0, 25))
+        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 125, 750, 1)
+        self.lFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFoot.shape.body, -math.pi/5, math.pi/5)
+
+        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie, self.rLeg, self.rLegDownwardForce,
+                       self.lLeg, self.lLegDownwardForce, self.rFootRotationLimit, self.lFootRotationLimit)
+
+    def update(self):
+        self.torso.update()
+        self.rFoot.update()
+        self.lFoot.update()
+
+    def kickRFoot(self):
+        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2)/2, math.sqrt(2)/2)) * 15000, (0, 0))
+
+    def reverseKickRFoot(self):
+        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
+
+    def kickLFoot(self):
+        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2)/2, math.sqrt(2)/2)) * 15000, (0, 0))
+
+    def reverseKickLFoot(self):
+        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
