@@ -16,7 +16,7 @@ collisionGroups = {
 }
 
 
-class PymunkSprite():
+class PymunkSprite:
     def __init__(self, space, screen, image, shape):
         self.shape = shape
         self.screen = screen
@@ -99,7 +99,7 @@ class PlayerOne():
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
-        #self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
+        # self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
 
         self.rFoot = OffensiveBlock(self.space, self.screen)
         self.rFoot.shape.friction = 1.5
@@ -137,6 +137,7 @@ class PlayerOne():
     def reverseKickLFoot(self):
         self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
 
+
 class PlayerTwo():
     def __init__(self, space, screen):
         self.space = space
@@ -153,7 +154,7 @@ class PlayerTwo():
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
-        #self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
+        # self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
 
         self.rFoot = OffensiveBlock(self.space, self.screen)
         self.rFoot.shape.friction = 1.5
