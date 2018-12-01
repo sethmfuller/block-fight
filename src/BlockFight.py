@@ -76,10 +76,6 @@ def main():
             elif event.type == KEYDOWN and event.key == K_e:
                 playerOne.reverseKickLFoot()
 
-        # mpos = pygame.mouse.get_pos()
-        # p = from_pygame(Vec2d(mpos))
-        # mouse_body.position = p
-
         # Clear screen
         screen.fill(THECOLORS["white"])
 
