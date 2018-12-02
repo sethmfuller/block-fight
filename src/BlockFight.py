@@ -23,7 +23,6 @@ display_flags = 0
 display_size = (800, 800)
 
 
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode(display_size, display_flags)
@@ -87,10 +86,6 @@ def main():
                 playerTwo.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_i:
                 playerTwo.reverseKickLFoot()
-
-        mpos = pygame.mouse.get_pos()
-        p = from_pygame(Vec2d(mpos))
-        mouse_body.position = p
 
         # Clear screen
         screen.fill(THECOLORS["white"])

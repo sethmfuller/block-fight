@@ -136,12 +136,13 @@ class PlayerOne():
     def reverseKickLFoot(self):
         self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
 
+
 class PlayerTwo():
     def __init__(self, space, screen):
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (100, 3*height/4)
+        pos = (100, height/4)
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
