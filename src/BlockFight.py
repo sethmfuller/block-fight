@@ -47,6 +47,7 @@ def main():
 
     # Add objects to space
     playerOne = Character.PlayerOne(space, screen)
+    playerTwo = Character.PlayerTwo(space, screen)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.5)
     floor.friction = 0.5
@@ -68,6 +69,7 @@ def main():
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
+            #Player one controls
             elif event.type == KEYDOWN and event.key == K_f:
                 playerOne.kickRFoot()
             elif event.type == KEYDOWN and event.key == K_d:
@@ -76,6 +78,15 @@ def main():
                 playerOne.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_e:
                 playerOne.reverseKickLFoot()
+            #Player two controls
+            elif event.type == KEYDOWN and event.key == K_j:
+                playerTwo.kickRFoot()
+            elif event.type == KEYDOWN and event.key == K_k:
+                playerTwo.reverseKickRFoot()
+            elif event.type == KEYDOWN and event.key == K_u:
+                playerTwo.kickLFoot()
+            elif event.type == KEYDOWN and event.key == K_i:
+                playerTwo.reverseKickLFoot()
 
         mpos = pygame.mouse.get_pos()
         p = from_pygame(Vec2d(mpos))
@@ -85,6 +96,7 @@ def main():
         screen.fill(THECOLORS["white"])
 
         playerOne.update()
+        playerTwo.update()
 
         # Update physics
         fps = 50
