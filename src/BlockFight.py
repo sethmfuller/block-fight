@@ -42,7 +42,6 @@ def main():
     space = pm.Space()
     space.gravity = (0.0, -1900.0)
     space.damping = 0.999  # to prevent it from blowing up.
-    mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
     playerOne = Character.PlayerOne(space, screen)

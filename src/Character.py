@@ -59,6 +59,7 @@ class Body(PymunkSprite):
         PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", shape)
         self.imageMaster.set_colorkey((0, 0, 0))
         self.shape.collision_type = COLLISION_BODY
+        self.health = 5
 
 
 class OffensiveBlock(PymunkSprite):
@@ -81,6 +82,7 @@ class DefensiveBlock(PymunkSprite):
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
         self.shape.collision_type = COLLISION_DEFENSE
+        self.health = 3
 
 
 class PlayerOne():
@@ -88,7 +90,7 @@ class PlayerOne():
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (100, height/4)
+        pos = (width/4, height/4)
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
@@ -142,7 +144,7 @@ class PlayerTwo():
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (100, height/4)
+        pos = (width-(width/4), height/4)
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
