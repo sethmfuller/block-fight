@@ -76,6 +76,10 @@ def main():
                 playerOne.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_e:
                 playerOne.reverseKickLFoot()
+            elif event.type == KEYDOWN and event.key == K_c:
+                playerOne.punchRight()
+            elif event.type == KEYDOWN and event.key == K_x:
+                playerOne.reversePunchRight()
             #Player two controls
             elif event.type == KEYDOWN and event.key == K_j:
                 playerTwo.kickRFoot()
