@@ -96,6 +96,14 @@ def main():
         playerOne.update()
         playerTwo.update()
 
+        for constraint in space.constraints:
+            if (isinstance(constraint, pm.PinJoint)):
+                pv1 = constraint.a.position + constraint.anchor_a
+                pv2 = constraint.b.position + constraint.anchor_b
+                p1 = to_pygame(pv1)
+                p2 = to_pygame(pv2)
+                pygame.draw.aalines(screen, THECOLORS["lightgray"], False, [p1, p2])
+
         # Update physics
         fps = 50
         iterations = 25

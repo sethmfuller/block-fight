@@ -108,15 +108,30 @@ class PlayerOne():
         self.rElbow.shape.body.position = self.torso.shape.body.position + (-50, 35)
         self.rElbow.shape.filter = filter
         self.rUpperArm = pm.PinJoint(self.torso.shape.body, self.rElbow.shape.body, (0, 35), (0, 0))
-        self.rUpperArm.distance = 35
+        self.rUpperArm.distance = 40
 
         self.rFist = OffensiveBlock(self.space, self.screen)
         self.rFist.shape.filter = filter
         self.rFist.shape.body.position = self.rElbow.shape.body.position + (-25, 0)
         self.rFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFist.shape.body, -math.pi/5, math.pi/5)
 
-        self.rLowerArm = pm.PinJoint(self.rElbow.shape.body, self.rFist.shape.body, (0, 0), (25, 0))
-        self.rLowerArm.distance = 20
+        self.rLowerArm = pm.PinJoint(self.rElbow.shape.body, self.rFist.shape.body)
+        self.rLowerArm.distance = 50
+
+        self.lElbow = DefensiveBlock(self.space, self.screen)
+        self.lElbow.shape.body.position = self.torso.shape.body.position + (50, 35)
+        self.lElbow.shape.filter = filter
+        self.lUpperArm = pm.PinJoint(self.torso.shape.body, self.lElbow.shape.body, (0, 35), (0, 0))
+        self.lUpperArm.distance = 40
+
+        self.lFist = OffensiveBlock(self.space, self.screen)
+        self.lFist.shape.filter = filter
+        self.lFist.shape.body.position = self.lElbow.shape.body.position + (25, 0)
+        self.lFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFist.shape.body, -math.pi / 5,
+                                                      math.pi / 5)
+
+        self.lLowerArm = pm.PinJoint(self.lElbow.shape.body, self.lFist.shape.body)
+        self.lLowerArm.distance = 50
 
         # Set up legs
         self.rKnee = DefensiveBlock(self.space, self.screen)
@@ -133,7 +148,7 @@ class PlayerOne():
         self.rFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFoot.shape.body, -math.pi/5, math.pi/5)
 
         self.rLowerLeg = pm.PinJoint(self.rKnee.shape.body, self.rFoot.shape.body, (0, 0), (0, 25))
-        self.rLowerLeg.distance = 30
+        self.rLowerLeg.distance = 50
 
         self.lKnee = DefensiveBlock(self.space, self.screen)
         self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
@@ -149,19 +164,22 @@ class PlayerOne():
         self.lFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFoot.shape.body, -math.pi/5, math.pi/5)
 
         self.lLowerLeg = pm.PinJoint(self.lKnee.shape.body, self.lFoot.shape.body, (0, 0), (0, 25))
-        self.lLowerLeg.distance = 30
+        self.lLowerLeg.distance = 50
 
-        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 250, 900, 1)
-        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 250, 900, 1)
+        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 300, 1250, 1)
+        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 300, 1250, 1)
 
         self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie,
                        self.rUpperLeg, self.rLegDownwardForce, self.lUpperLeg, self.lLegDownwardForce,
                        self.rFootRotationLimit, self.lFootRotationLimit,
-                       #self.rFistRotationLimit,
+                       self.rFistRotationLimit, self.lFistRotationLimit,
                        self.lLowerLeg, self.rLowerLeg,
-                       self.rUpperArm, self.rLowerArm)
+                       self.rUpperArm, self.rLowerArm,
+                       self.lUpperArm, self.lLowerArm)
 
     def update(self):
+        self.lElbow.update()
+        self.lFist.update()
         self.torso.update()
         # Update legs and feet
         self.rFoot.update()
@@ -190,56 +208,138 @@ class PlayerOne():
     def reversePunchRight(self):
         self.rFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, 0)) * 50000, (0, 0))
 
+    def punchLeft(self):
+        self.lFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, 0)) * 50000, (0, 0))
+
+    def reversePunchLeft(self):
+        self.lFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, 0)) * 50000, (0, 0))
+
 
 class PlayerTwo():
     def __init__(self, space, screen):
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (width-(width/4), height/4)
+        pos = (3*width/4, height/4)
+        filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
         self.torso = Body(space, screen)
-        self.torso.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
+        self.torso.shape.filter = filter
         self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
                                                       math.pi / 10)
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
 
+        #Set up arms
+        self.rElbow = DefensiveBlock(self.space, self.screen)
+        self.rElbow.shape.body.position = self.torso.shape.body.position + (-50, 35)
+        self.rElbow.shape.filter = filter
+        self.rUpperArm = pm.PinJoint(self.torso.shape.body, self.rElbow.shape.body, (0, 35), (0, 0))
+        self.rUpperArm.distance = 40
+
+        self.rFist = OffensiveBlock(self.space, self.screen)
+        self.rFist.shape.filter = filter
+        self.rFist.shape.body.position = self.rElbow.shape.body.position + (-25, 0)
+        self.rFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFist.shape.body, -math.pi/5, math.pi/5)
+
+        self.rLowerArm = pm.PinJoint(self.rElbow.shape.body, self.rFist.shape.body)
+        self.rLowerArm.distance = 50
+
+        self.lElbow = DefensiveBlock(self.space, self.screen)
+        self.lElbow.shape.body.position = self.torso.shape.body.position + (50, 35)
+        self.lElbow.shape.filter = filter
+        self.lUpperArm = pm.PinJoint(self.torso.shape.body, self.lElbow.shape.body, (0, 35), (0, 0))
+        self.lUpperArm.distance = 40
+
+        self.lFist = OffensiveBlock(self.space, self.screen)
+        self.lFist.shape.filter = filter
+        self.lFist.shape.body.position = self.lElbow.shape.body.position + (25, 0)
+        self.lFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFist.shape.body, -math.pi / 5,
+                                                      math.pi / 5)
+
+        self.lLowerArm = pm.PinJoint(self.lElbow.shape.body, self.lFist.shape.body)
+        self.lLowerArm.distance = 50
+
+        # Set up legs
+        self.rKnee = DefensiveBlock(self.space, self.screen)
+        self.rKnee.shape.body.position = self.torso.shape.body.position + (-25, -100)
+        self.rKnee.shape.filter = filter
+
+        self.rUpperLeg = pm.PinJoint(self.torso.shape.body, self.rKnee.shape.body, (0, -50), (0, 0))
+        self.rUpperLeg.distance = 40
+
         self.rFoot = OffensiveBlock(self.space, self.screen)
         self.rFoot.shape.friction = 1.5
-        self.rFoot.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
-        self.rFoot.shape.body.position = self.torso.shape.body.position + (-25, -100)
-        self.rLeg = pm.PinJoint(self.torso.shape.body, self.rFoot.shape.body, (0, -50), (0, 25))
-        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 125, 750, 1)
+        self.rFoot.shape.filter = filter
+        self.rFoot.shape.body.position = self.rKnee.shape.body.position + (-25, -10)
         self.rFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFoot.shape.body, -math.pi/5, math.pi/5)
+
+        self.rLowerLeg = pm.PinJoint(self.rKnee.shape.body, self.rFoot.shape.body, (0, 0), (0, 25))
+        self.rLowerLeg.distance = 50
+
+        self.lKnee = DefensiveBlock(self.space, self.screen)
+        self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
+        self.lKnee.shape.filter = filter
+
+        self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
+        self.lUpperLeg.distance = 40
 
         self.lFoot = OffensiveBlock(self.space, self.screen)
         self.lFoot.shape.friction = 1.5
-        self.lFoot.shape.filter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
-        self.lFoot.shape.body.position = self.torso.shape.body.position + (25, -100)
-        self.lLeg = pm.PinJoint(self.torso.shape.body, self.lFoot.shape.body, (0, -50), (0, 25))
-        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 125, 750, 1)
+        self.lFoot.shape.filter = filter
+        self.lFoot.shape.body.position = self.lKnee.shape.body.position + (25, -10)
         self.lFootRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFoot.shape.body, -math.pi/5, math.pi/5)
 
-        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie, self.rLeg, self.rLegDownwardForce,
-                       self.lLeg, self.lLegDownwardForce, self.rFootRotationLimit, self.lFootRotationLimit)
+        self.lLowerLeg = pm.PinJoint(self.lKnee.shape.body, self.lFoot.shape.body, (0, 0), (0, 25))
+        self.lLowerLeg.distance = 50
+
+        self.rLegDownwardForce = pm.DampedSpring(self.coreBody, self.rFoot.shape.body, (0, 0), (0, 25), 300, 1250, 1)
+        self.lLegDownwardForce = pm.DampedSpring(self.coreBody, self.lFoot.shape.body, (0, 0), (0, 25), 300, 1250, 1)
+
+        self.space.add(self.coreBody, self.torsoRotationLimit, self.torsoLocationTie,
+                       self.rUpperLeg, self.rLegDownwardForce, self.lUpperLeg, self.lLegDownwardForce,
+                       self.rFootRotationLimit, self.lFootRotationLimit,
+                       self.rFistRotationLimit, self.lFistRotationLimit,
+                       self.lLowerLeg, self.rLowerLeg,
+                       self.rUpperArm, self.rLowerArm,
+                       self.lUpperArm, self.lLowerArm)
 
     def update(self):
+        self.lElbow.update()
+        self.lFist.update()
         self.torso.update()
+        # Update legs and feet
         self.rFoot.update()
         self.lFoot.update()
+        self.rKnee.update()
+        self.lKnee.update()
+        # Update arms and fists
+        self.rElbow.update()
+        self.rFist.update()
 
     def kickRFoot(self):
-        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2)/2, math.sqrt(2)/2)) * 15000, (0, 0))
+        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, math.sqrt(2)/2)) * 25000, (0, 0))
 
     def reverseKickRFoot(self):
-        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
+        self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, math.sqrt(2) / 2)) * 25000, (0, 0))
 
     def kickLFoot(self):
-        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-math.sqrt(2)/2, math.sqrt(2)/2)) * 15000, (0, 0))
+        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, math.sqrt(2)/2)) * 25000, (0, 0))
 
     def reverseKickLFoot(self):
-        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (math.sqrt(2) / 2, math.sqrt(2) / 2)) * 15000, (0, 0))
+        self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, math.sqrt(2) / 2)) * 25000, (0, 0))
+
+    def punchRight(self):
+        self.rFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, 0)) * 50000, (0, 0))
+
+    def reversePunchRight(self):
+        self.rFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, 0)) * 50000, (0, 0))
+
+    def punchLeft(self):
+        self.lFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, 0)) * 50000, (0, 0))
+
+    def reversePunchLeft(self):
+        self.lFist.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, 0)) * 50000, (0, 0))
