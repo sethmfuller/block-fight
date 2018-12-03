@@ -1,7 +1,7 @@
 # Author: Christopher Ash
+# File: Character.py
 
 import pygame
-from pygame.color import *
 import pymunk as pm
 from pymunk import Vec2d
 import math
@@ -41,12 +41,6 @@ class PymunkSprite():
         p = p - offset
 
         self.screen.blit(rotated_logo_img, p)
-
-        # Debug drawing
-        ps = [p.rotated(self.shape.body.angle) + self.shape.body.position for p in self.shape.get_vertices()]
-        ps = [(p.x, self.flipy(p.y)) for p in ps]
-        ps += [ps[0]]
-        pygame.draw.lines(self.screen, THECOLORS["red"], False, ps, 1)
 
 
 class Body(PymunkSprite):
