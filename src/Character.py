@@ -78,17 +78,20 @@ class DefensiveBlock(PymunkSprite):
         self.shape.collision_type = COLLISION_DEFENSE
         self.health = 3
 
-        self.theVal = self.shape.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE).begin
+        # We get a collision handler representation.
+        self.handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
+        # Then we set the collision handler's methods to what we want.
+        self.handler.begin = self.collisionAction
 
-    def collisionAction(self):
-        if(self.theVal):
-            print("Hello there")
+    def collisionAction(self, arbiter, space, data):
+
+        print("Hello there")
+        return True
 
 
 class PlayerOne():
     def __init__(self, space, screen):
         self.space = space
-        self.space.collisionAction()
         self.screen = screen
         width, height = screen.get_size()
         pos = (width/4, height/4)
