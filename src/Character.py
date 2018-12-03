@@ -86,7 +86,8 @@ class DefensiveBlock(PymunkSprite):
 
     # collision method
         # needs to take in collision_type and opposite block in question
-    def 
+    def collisionDetection():
+        print("hey there")
 
 
 class PlayerOne():
