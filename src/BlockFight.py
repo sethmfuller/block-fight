@@ -76,10 +76,14 @@ def main():
                 playerOne.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_e:
                 playerOne.reverseKickLFoot()
-            elif event.type == KEYDOWN and event.key == K_c:
+            elif event.type == KEYDOWN and event.key == K_v:
                 playerOne.punchRight()
-            elif event.type == KEYDOWN and event.key == K_x:
+            elif event.type == KEYDOWN and event.key == K_c:
                 playerOne.reversePunchRight()
+            elif event.type == KEYDOWN and event.key == K_x:
+                playerOne.punchLeft()
+            elif event.type == KEYDOWN and event.key == K_z:
+                playerOne.reversePunchLeft()
             #Player two controls
             elif event.type == KEYDOWN and event.key == K_j:
                 playerTwo.kickRFoot()
@@ -89,6 +93,14 @@ def main():
                 playerTwo.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_i:
                 playerTwo.reverseKickLFoot()
+            elif event.type == KEYDOWN and event.key == K_n:
+                playerTwo.punchRight()
+            elif event.type == KEYDOWN and event.key == K_m:
+                playerTwo.reversePunchRight()
+            elif event.type == KEYDOWN and event.key == K_COMMA:
+                playerTwo.punchLeft()
+            elif event.type == KEYDOWN and event.key == K_PERIOD:
+                playerTwo.reversePunchLeft()
 
         # Clear screen
         screen.fill(THECOLORS["white"])
