@@ -78,10 +78,17 @@ class DefensiveBlock(PymunkSprite):
         self.shape.collision_type = COLLISION_DEFENSE
         self.health = 3
 
+        self.theVal = self.shape.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE).begin
+
+    def collisionAction(self):
+        if(self.theVal):
+            print("Hello there")
+
 
 class PlayerOne():
     def __init__(self, space, screen):
         self.space = space
+        self.space.collisionAction()
         self.screen = screen
         width, height = screen.get_size()
         pos = (width/4, height/4)
@@ -99,6 +106,9 @@ class PlayerOne():
 
         #Set up arms
         self.rElbow = DefensiveBlock(self.space, self.screen)
+
+        # self.rElbow.collisionAction() # Added collision action?
+
         self.rElbow.shape.body.position = self.torso.shape.body.position + (-50, 35)
         self.rElbow.shape.filter = filter
         self.rUpperArm = pm.PinJoint(self.torso.shape.body, self.rElbow.shape.body, (0, 35), (0, 0))
