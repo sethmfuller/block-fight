@@ -85,6 +85,7 @@ class DefensiveBlock(PymunkSprite):
 
     def collisionAction(self, arbiter, space, data):
         self.health = self.health - 1
+        print("Health value: ", self.health)
         if(self.health == 0):
             print("Hello there")
         return True
