@@ -76,7 +76,7 @@ class DefensiveBlock(PymunkSprite):
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
         self.shape.collision_type = COLLISION_DEFENSE
-        self.health = 3
+        self.health = 100
 
         # We get a collision handler representation.
         self.handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
@@ -84,8 +84,9 @@ class DefensiveBlock(PymunkSprite):
         self.handler.begin = self.collisionAction
 
     def collisionAction(self, arbiter, space, data):
-
-        print("Hello there")
+        self.health = self.health - 1
+        if(self.health == 0):
+            print("Hello there")
         return True
 
 
