@@ -42,10 +42,10 @@ def main():
     space = pm.Space()
     space.gravity = (0.0, -1900.0)
     space.damping = 0.999  # to prevent it from blowing up.
-    mouse_body = pm.Body(body_type=pm.Body.KINEMATIC)
 
     # Add objects to space
     playerOne = Character.PlayerOne(space, screen)
+    playerTwo = Character.PlayerTwo(space, screen)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.5)
     floor.friction = 0.5
@@ -67,6 +67,7 @@ def main():
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
+            #Player one controls
             elif event.type == KEYDOWN and event.key == K_f:
                 playerOne.kickRFoot()
             elif event.type == KEYDOWN and event.key == K_d:
@@ -75,11 +76,21 @@ def main():
                 playerOne.kickLFoot()
             elif event.type == KEYDOWN and event.key == K_e:
                 playerOne.reverseKickLFoot()
+            #Player two controls
+            elif event.type == KEYDOWN and event.key == K_j:
+                playerTwo.kickRFoot()
+            elif event.type == KEYDOWN and event.key == K_k:
+                playerTwo.reverseKickRFoot()
+            elif event.type == KEYDOWN and event.key == K_u:
+                playerTwo.kickLFoot()
+            elif event.type == KEYDOWN and event.key == K_i:
+                playerTwo.reverseKickLFoot()
 
         # Clear screen
         screen.fill(THECOLORS["white"])
 
         playerOne.update()
+        playerTwo.update()
 
         # Update physics
         fps = 50

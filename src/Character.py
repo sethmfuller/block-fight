@@ -16,7 +16,7 @@ collisionGroups = {
 }
 
 
-class PymunkSprite:
+class PymunkSprite():
     def __init__(self, space, screen, image, shape):
         self.shape = shape
         self.screen = screen
@@ -59,6 +59,7 @@ class Body(PymunkSprite):
         PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", shape)
         self.imageMaster.set_colorkey((0, 0, 0))
         self.shape.collision_type = COLLISION_BODY
+        self.health = 5
 
 
 class OffensiveBlock(PymunkSprite):
@@ -81,6 +82,7 @@ class DefensiveBlock(PymunkSprite):
         shape = pm.Poly(body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
         self.shape.collision_type = COLLISION_DEFENSE
+        self.health = 3
 
 
 class PlayerOne():
@@ -88,7 +90,7 @@ class PlayerOne():
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (100, height/4)
+        pos = (width/4, height/4)
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
@@ -99,7 +101,6 @@ class PlayerOne():
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
-        # self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
 
         self.rFoot = OffensiveBlock(self.space, self.screen)
         self.rFoot.shape.friction = 1.5
@@ -143,7 +144,7 @@ class PlayerTwo():
         self.space = space
         self.screen = screen
         width, height = screen.get_size()
-        pos = (100, height/4)
+        pos = (width-(width/4), height/4)
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
@@ -154,7 +155,6 @@ class PlayerTwo():
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
         self.torsoLocationTie.distance = 0
         self.torso.shape.body.position = pos
-        # self.torso.shape.body.apply_impulse_at_local_point(Vec2d.unit() * 1000, (10, -10))
 
         self.rFoot = OffensiveBlock(self.space, self.screen)
         self.rFoot.shape.friction = 1.5
