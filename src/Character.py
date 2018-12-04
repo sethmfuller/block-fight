@@ -82,14 +82,13 @@ class DefenseShape(pm.Poly):
         handler.begin = self.collisionAction
         # self.handler.data["def"] = self
 
+
     def collisionAction(self, arbiter, space, data):
         if (arbiter.is_first_contact):
             a, b = arbiter.shapes
             a.health = a.health - 1
+
             print("Health value: ", a.health)
-            if (a.health <= 0):
-                print(a, "less than or equal to zero")
-                space.remove(a, a.body)
 
             return True
 
@@ -102,13 +101,6 @@ class DefensiveBlock(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = DefenseShape(space, body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
-        self.pinJoint1
-        self.pinJoint2
-
-    def addJoint(self, pinJoint1, pinJoint2):
-        self.pinJoint1 = pinJoint1
-        self.pinJoint2 = pinJoint2
-
 
 
 class PlayerOne():
@@ -206,7 +198,34 @@ class PlayerOne():
                        self.rUpperArm, self.rLowerArm,
                        self.lUpperArm, self.lLowerArm)
 
+    def checkForDeath(self):
+        if self.rKnee.shape.health <= 0:
+            self.space.remove(self.rKnee.shape.body,
+                              self.rKnee.shape,
+                              self.rUpperLeg,
+                              self.rLowerLeg)
+
+        if self.lKnee.shape.health <= 0:
+            self.space.remove(self.lKnee.shape.body,
+                              self.lKnee.shape,
+                              self.lUpperLeg,
+                              self.lLowerLeg)
+
+        if self.rElbow.shape.health <= 0:
+            self.space.remove(self.rElbow.shape.body,
+                              self.rElbow.shape,
+                              self.rUpperArm,
+                              self.rLowerArm)
+
+        if self.lElbow.shape.health <= 0:
+            self.space.remove(self.lElbow.shape.body,
+                              self.lElbow.shape,
+                              self.lUpperArm,
+                              self.lLowerArm)
+
+
     def update(self):
+        self.checkForDeath()
         self.lElbow.update()
         self.lFist.update()
         self.torso.update()
