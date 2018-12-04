@@ -24,6 +24,8 @@ display_size = (800, 800)
 def main():
     pygame.init()
     screen = pygame.display.set_mode(display_size, display_flags)
+    pygame.display.set_caption("Mace Ragdoll Fight")
+
     width, height = screen.get_size()
 
     def to_pygame(p):
@@ -59,7 +61,12 @@ def main():
 
     space.add(floor, leftWall, roof, rightWall)
 
+    # Play Game music
+    pygame.mixer.music.load('../assets/sound/ThisIsWhoWeAre.mp3')
+    pygame.mixer.music.play(-1)
+
     while running:
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
