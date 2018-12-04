@@ -25,5 +25,5 @@
 
 ### Iteration 6
 
-    * Add limb-break-off-ability
+    * Add limb-break-off-ability (Complete)
     * Add definite winner

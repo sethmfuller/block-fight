@@ -1,7 +1,9 @@
+# Game Design Doc
+
 Sprites:
     Body block: Yellow ellipse, anchor for arms and legs
-    Defensive block: Blue circle, elbows and knees
-    Offensive block: Red square, fists and feet
+    Defensive block: Dark grey circle, elbows and knees
+    Offensive block: Mace ball, fists and feet
 
 Interactions:
     Only interaction is between offensive blocks and the defensive and body blocks.
@@ -15,3 +17,10 @@ Birth and Death of sprites:
 
 State changes:
     When a player defeats the other, a game end screen declaring the winner is displayed, then the game resets
+
+
+## Language/environment
+
+We chose
+<a href="http://www.pymunk.org/en/latest/">Pymunk</a>
+ (a game engine with high-level physics capabilities). Pymunk is built ontop of <a href="https://www.pygame.org/docs/">Pygame</a>
