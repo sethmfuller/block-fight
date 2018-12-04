@@ -82,14 +82,14 @@ class OffensiveBlock(PymunkSprite):
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = pm.Poly(body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/MaceBall.png", shape)
         self.shape.collision_type = COLLISION_OFFENSE
 
 
 class DefenseShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 1
+        self.health = 5
         self.collision_type = COLLISION_DEFENSE
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
@@ -114,7 +114,7 @@ class DefensiveBlock(PymunkSprite):
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = DefenseShape(space, body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
+        PymunkSprite.__init__(self, space, screen, "../assets/img/joint.png", shape)
 
 
 class PlayerOne():
@@ -280,9 +280,14 @@ class PlayerOne():
 
     def update(self):
         self.checkForDeath()
+
         if self.leftArmAlive:
             self.lElbow.update()
             self.lFist.update()
+
+        if self.leftLegAlive:
+            self.lFoot.update()
+            self.lKnee.update()
 
         self.torso.update()
 
@@ -294,9 +299,7 @@ class PlayerOne():
             self.rFoot.update()
             self.rKnee.update()
 
-        if self.leftLegAlive:
-            self.lFoot.update()
-            self.lKnee.update()
+
 
     def kickRFoot(self):
         self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, math.sqrt(2) / 2)) * 25000, (0, 0))
