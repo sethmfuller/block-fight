@@ -10,13 +10,11 @@ import pymunk as pm
 from pymunk import Vec2d
 import Character
 
-
 __docformat__ = "reStructuredText"
 description = """
 ---- Block File ----
 A Cool Game
 """
-
 
 is_interactive = False
 display_flags = 0
@@ -67,7 +65,7 @@ def main():
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
-            #Player one controls
+            # Player one controls
             elif event.type == KEYDOWN and event.key == K_f:
                 playerOne.kickRFoot()
             elif event.type == KEYDOWN and event.key == K_d:
@@ -84,7 +82,7 @@ def main():
                 playerOne.punchLeft()
             elif event.type == KEYDOWN and event.key == K_z:
                 playerOne.reversePunchLeft()
-            #Player two controls
+            # Player two controls
             elif event.type == KEYDOWN and event.key == K_j:
                 playerTwo.kickRFoot()
             elif event.type == KEYDOWN and event.key == K_k:
