@@ -3,7 +3,6 @@
 # Collision Handling: Austin Bearden, Seth Fuller
 # Images and Sound: Seth Fuller
 
-
 import pygame
 import pymunk as pm
 from pymunk import Vec2d
@@ -45,7 +44,6 @@ class PymunkSprite():
 
         self.screen.blit(rotated_logo_img, p)
 
-
 class BodyShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
@@ -65,7 +63,6 @@ class BodyShape(pm.Poly):
             print("Health value: ", a.health)
 
             return True
-
 
 class Body(PymunkSprite):
     def __init__(self, space, screen):
@@ -147,7 +144,6 @@ class PlayerOne():
         self.rElbow = DefensiveBlock(self.space, self.screen)
         self.rElbow.shape.body.position = self.torso.shape.body.position + (-50, 35)
         self.rElbow.shape.filter = shapeFilter
-
         self.rUpperArm = pm.PinJoint(self.torso.shape.body, self.rElbow.shape.body, (0, 35), (0, 0))
         self.rUpperArm.distance = 40
 
@@ -156,6 +152,7 @@ class PlayerOne():
         self.rFist.shape.body.position = self.rElbow.shape.body.position + (-25, 0)
         self.rFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.rFist.shape.body, -math.pi / 5,
                                                       math.pi / 5)
+
 
         self.rLowerArm = pm.PinJoint(self.rElbow.shape.body, self.rFist.shape.body)
         self.rLowerArm.distance = 50
@@ -196,6 +193,16 @@ class PlayerOne():
         self.lKnee = DefensiveBlock(self.space, self.screen)
         self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
         self.lKnee.shape.filter = shapeFilter
+
+        self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
+        self.lUpperLeg.distance = 40
+
+        self.rLowerLeg = pm.PinJoint(self.rKnee.shape.body, self.rFoot.shape.body, (0, 0), (0, 25))
+        self.rLowerLeg.distance = 50
+
+        self.lKnee = DefensiveBlock(self.space, self.screen)
+        self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
+        self.lKnee.shape.filter = filter
 
         self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
         self.lUpperLeg.distance = 40
@@ -300,6 +307,7 @@ class PlayerOne():
     def kickLFoot(self):
         self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (1, math.sqrt(2) / 2)) * 25000, (0, 0))
 
+
     def reverseKickLFoot(self):
         self.lFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, math.sqrt(2) / 2)) * 25000, (0, 0))
 
@@ -323,6 +331,7 @@ class PlayerTwo():
         width, height = screen.get_size()
         pos = (3 * width / 4, height / 4)
         shapeFilter = pm.ShapeFilter(collisionGroups["PLAYER2"], collisionGroups["PLAYER1"])
+
         self.coreBody = pm.Body(10, 1000)
         self.coreBody.position = pos
 
@@ -333,6 +342,7 @@ class PlayerTwo():
 
         self.torso = Body(space, screen)
         self.torso.shape.filter = shapeFilter
+
         self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
                                                       math.pi / 10)
         self.torsoLocationTie = pm.PinJoint(self.coreBody, self.torso.shape.body)
@@ -343,6 +353,7 @@ class PlayerTwo():
         self.rElbow = DefensiveBlock(self.space, self.screen)
         self.rElbow.shape.body.position = self.torso.shape.body.position + (-50, 35)
         self.rElbow.shape.filter = shapeFilter
+
         self.rUpperArm = pm.PinJoint(self.torso.shape.body, self.rElbow.shape.body, (0, 35), (0, 0))
         self.rUpperArm.distance = 40
 
@@ -358,11 +369,13 @@ class PlayerTwo():
         self.lElbow = DefensiveBlock(self.space, self.screen)
         self.lElbow.shape.body.position = self.torso.shape.body.position + (50, 35)
         self.lElbow.shape.filter = shapeFilter
+
         self.lUpperArm = pm.PinJoint(self.torso.shape.body, self.lElbow.shape.body, (0, 35), (0, 0))
         self.lUpperArm.distance = 40
 
         self.lFist = OffensiveBlock(self.space, self.screen)
         self.lFist.shape.filter = shapeFilter
+
         self.lFist.shape.body.position = self.lElbow.shape.body.position + (25, 0)
         self.lFistRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.lFist.shape.body, -math.pi / 5,
                                                       math.pi / 5)
@@ -374,6 +387,7 @@ class PlayerTwo():
         self.rKnee = DefensiveBlock(self.space, self.screen)
         self.rKnee.shape.body.position = self.torso.shape.body.position + (-25, -100)
         self.rKnee.shape.filter = shapeFilter
+
 
         self.rUpperLeg = pm.PinJoint(self.torso.shape.body, self.rKnee.shape.body, (0, -50), (0, 0))
         self.rUpperLeg.distance = 40
@@ -391,6 +405,16 @@ class PlayerTwo():
         self.lKnee = DefensiveBlock(self.space, self.screen)
         self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
         self.lKnee.shape.filter = shapeFilter
+
+        self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
+        self.lUpperLeg.distance = 40
+
+        self.rLowerLeg = pm.PinJoint(self.rKnee.shape.body, self.rFoot.shape.body, (0, 0), (0, 25))
+        self.rLowerLeg.distance = 50
+
+        self.lKnee = DefensiveBlock(self.space, self.screen)
+        self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
+        self.lKnee.shape.filter = filter
 
         self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
         self.lUpperLeg.distance = 40
