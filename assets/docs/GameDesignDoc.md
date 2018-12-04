@@ -1,7 +1,7 @@
 Sprites:
     Body block: Yellow ellipse, anchor for arms and legs
-    Defensive block: Blue circle, elbows and knees
-    Offensive block: Red square, fists and feet
+    Defensive block: Dark grey circle, elbows and knees
+    Offensive block: Mace ball, fists and feet
 
 Interactions:
     Only interaction is between offensive blocks and the defensive and body blocks.
