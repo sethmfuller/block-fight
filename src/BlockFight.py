@@ -19,7 +19,39 @@ A Cool Game
 is_interactive = False
 display_flags = 0
 display_size = (800, 800)
+ENDGAME_EVENT = pygame.USEREVENT + 3
 
+# Movable Text Sprite
+class Text(pygame.sprite.Sprite):
+    def __init__(self, scene, text, textColor, width, height, fontSize=30):
+        pygame.sprite.Sprite.__init__(self)
+        self.scene = scene
+        self.font = pygame.font.SysFont("", fontSize)
+        self.text = text
+        self.textColor = textColor
+        self.size = (width, height)
+        self.x = 0
+        self.y = 0
+
+    def setText(self, text):
+        self.text = text
+
+    def setPosition(self, x, y):
+        self.x = x
+        self.y = y
+
+    def setDimensions(self, width, height):
+        self.size = (width, height)
+
+    def update(self):
+        self.image = pygame.Surface(self.size)
+        self.image.set_colorkey(self.image.get_at((0, 0)))
+        fontSurface = self.font.render(self.text, True, self.textColor)
+        xPos = (self.image.get_width() - fontSurface.get_width()) / 2
+        self.image.blit(fontSurface, (xPos, 0))
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+        self.scene.blit(fontSurface, (self.x, self.y))
 
 def main():
     pygame.init()
@@ -36,7 +68,7 @@ def main():
         return to_pygame(p)
 
     clock = pygame.time.Clock()
-    running = True
+    keepGoing = True
 
     # Physics stuff
     space = pm.Space()
@@ -46,6 +78,10 @@ def main():
     # Add objects to space
     playerOne = Character.PlayerOne(space, screen)
     playerTwo = Character.PlayerTwo(space, screen)
+    playerOneVictoryText = Text(screen, "Player 1 Wins!", (0, 0, 0), 500, 100, 100)
+    playerOneVictoryText.setPosition(-1000, -1000)
+    playerTwoVictoryText = Text(screen, "Player 2 Wins!", (0, 0, 0), 500, 100, 100)
+    playerTwoVictoryText.setPosition(-1000, -1000)
 
     floor = pm.Segment(space.static_body, (0, 0), (width, 0), 0.5)
     floor.friction = 0.5
@@ -64,14 +100,27 @@ def main():
     # Play Game music
     pygame.mixer.music.load('../assets/sound/ThisIsWhoWeAre.mp3')
     pygame.mixer.music.play(-1)
+    continuePlaying = True
 
-    while running:
+    while keepGoing:
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
+                keepGoing = False
+                continuePlaying = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                running = False
+                keepGoing = False
+                continuePlaying = False
+            elif event.type == Character.PLAYERONE_VICTOR:
+                playerOneVictoryText.setPosition(width/3, height/2)
+                pygame.time.set_timer(ENDGAME_EVENT, 2500)
+            elif event.type == Character.PLAYERTWO_VICTOR:
+                playerTwoVictoryText.setPosition(width/3, height/2)
+                pygame.time.set_timer(ENDGAME_EVENT, 2500)
+            elif event.type == ENDGAME_EVENT:
+                pygame.time.set_timer(ENDGAME_EVENT, 0)
+                keepGoing = False
+
             # Player one controls
             elif event.type == KEYDOWN and event.key == K_f:
                 playerOne.kickRFoot()
@@ -89,6 +138,7 @@ def main():
                 playerOne.punchLeft()
             elif event.type == KEYDOWN and event.key == K_z:
                 playerOne.reversePunchLeft()
+
             # Player two controls
             elif event.type == KEYDOWN and event.key == K_j:
                 playerTwo.kickRFoot()
@@ -112,6 +162,8 @@ def main():
 
         playerOne.update()
         playerTwo.update()
+        playerOneVictoryText.update()
+        playerTwoVictoryText.update()
 
         for constraint in space.constraints:
             if (isinstance(constraint, pm.PinJoint)):
@@ -130,7 +182,9 @@ def main():
 
         pygame.display.flip()
         clock.tick(fps)
+    return continuePlaying
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    while (main()):
+        pass

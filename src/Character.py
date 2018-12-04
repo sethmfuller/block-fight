@@ -12,6 +12,9 @@ COLLISION_BODY = 1
 COLLISION_OFFENSE = 2
 COLLISION_DEFENSE = 3
 
+PLAYERONE_VICTOR = pygame.USEREVENT+1
+PLAYERTWO_VICTOR = pygame.USEREVENT+2
+
 collisionGroups = {
     "PLAYER1": 0b01,
     "PLAYER2": 0b10
@@ -47,22 +50,26 @@ class PymunkSprite():
 class BodyShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 10
+        self.health = 500
         self.collision_type = COLLISION_BODY
+        self.soundEffect = pygame.mixer.Sound('../assets/sound/smack.wav')
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_BODY, COLLISION_OFFENSE)
 
         # Then we set the collision handler's methods to what we want.
-        handler.begin = self.collisionAction
+        handler.post_solve = self.collisionAction
 
     def collisionAction(self, arbiter, space, data):
         if (arbiter.is_first_contact):
-            a, b = arbiter.shapes
-            a.health = a.health - 1
+            force = math.sqrt(math.pow(arbiter.total_impulse[0], 2) + math.pow(arbiter.total_impulse[1], 2))
+            print("Total force: ", force)
+            if force > 1500:
+                self.soundEffect.play()
+                a, b = arbiter.shapes
+                a.health = a.health - 1
+                print("Health value: ", a.health)
 
-            print("Health value: ", a.health)
-
-            return True
+        return True
 
 class Body(PymunkSprite):
     def __init__(self, space, screen):
@@ -89,23 +96,26 @@ class OffensiveBlock(PymunkSprite):
 class DefenseShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 10
+        self.health = 25
         self.collision_type = COLLISION_DEFENSE
         self.soundEffect = pygame.mixer.Sound('../assets/sound/smack.wav')
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
 
         # Then we set the collision handler's methods to what we want.
-        handler.begin = self.collisionAction
+        handler.post_solve = self.collisionAction
 
     def collisionAction(self, arbiter, space, data):
         if (arbiter.is_first_contact):
-            a, b = arbiter.shapes
-            a.health = a.health - 1
+            force = math.sqrt(math.pow(arbiter.total_impulse[0], 2) + math.pow(arbiter.total_impulse[1], 2))
+            print("Total force: ", force)
+            if force > 1000:
+                self.soundEffect.play()
+                a, b = arbiter.shapes
+                a.health = a.health - 1
+                print("Health value: ", a.health)
 
-            print("Health value: ", a.health)
-
-            return True
+        return True
 
 
 class DefensiveBlock(PymunkSprite):
@@ -279,6 +289,10 @@ class PlayerOne():
                     self.lUpperArm, self.lLowerArm
                 )
 
+        if (not self.leftLegAlive and not self.rightLegAlive
+                and not self.leftArmAlive and not self.rightArmAlive) or (self.torso.shape.health == 0):
+            pygame.event.post(pygame.event.Event(PLAYERTWO_VICTOR, {}))
+
     def update(self):
         self.checkForDeath()
 
@@ -290,7 +304,8 @@ class PlayerOne():
             self.lFoot.update()
             self.lKnee.update()
 
-        self.torso.update()
+        if self.torso.shape.health > 0:
+            self.torso.update()
 
         if self.rightArmAlive:
             self.rElbow.update()
@@ -492,6 +507,9 @@ class PlayerTwo():
                     self.lElbow.shape, self.lElbow.shape.body,
                     self.lUpperArm, self.lLowerArm
                 )
+        if (not self.leftLegAlive and not self.rightLegAlive
+                and not self.leftArmAlive and not self.rightArmAlive) or (self.torso.shape.health == 0):
+            pygame.event.post(pygame.event.Event(PLAYERONE_VICTOR, {}))
 
     def update(self):
         self.checkForDeath()
@@ -503,7 +521,8 @@ class PlayerTwo():
             self.lFoot.update()
             self.lKnee.update()
 
-        self.torso.update()
+        if self.torso.shape.health > 0:
+            self.torso.update()
 
         if self.rightArmAlive:
             self.rElbow.update()
