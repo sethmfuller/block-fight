@@ -1,5 +1,8 @@
 # Author: Christopher Ash
 # File: Character.py
+# Collision Handling: Austin Bearden, Seth Fuller
+# Images and Sound: Seth Fuller
+
 
 import pygame
 import pymunk as pm
@@ -66,10 +69,11 @@ class OffensiveBlock(PymunkSprite):
         PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", shape)
         self.shape.collision_type = COLLISION_OFFENSE
 
+
 class DefenseShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 100
+        self.health = 1
         self.collision_type = COLLISION_DEFENSE
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
@@ -83,8 +87,10 @@ class DefenseShape(pm.Poly):
             a, b = arbiter.shapes
             a.health = a.health - 1
             print("Health value: ", a.health)
-            if (a.health == 0):
-                print("Hello there")
+            if (a.health <= 0):
+                print(a, "less than or equal to zero")
+                space.remove(a, a.body)
+
             return True
 
 
@@ -96,8 +102,12 @@ class DefensiveBlock(PymunkSprite):
         body = pm.Body(mass, moment)
         shape = DefenseShape(space, body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
+        self.pinJoint1
+        self.pinJoint2
 
-
+    def addJoint(self, pinJoint1, pinJoint2):
+        self.pinJoint1 = pinJoint1
+        self.pinJoint2 = pinJoint2
 
 
 
