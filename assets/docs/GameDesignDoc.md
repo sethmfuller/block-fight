@@ -21,6 +21,6 @@ State changes:
 
 ## Language/environment
 
-We choose
+We chose
 <a href="http://www.pymunk.org/en/latest/">pymunk</a>
- (a game engine with high-level physics capabilities). pymunk is a built ontop of <a href="https://www.pygame.org/news">pygame</a>
+ (a game engine with high-level physics capabilities). pymunk is built ontop of <a href="https://www.pygame.org/news">pygame</a>
