@@ -202,7 +202,7 @@ class PlayerOne():
 
         self.lKnee = DefensiveBlock(self.space, self.screen)
         self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
-        self.lKnee.shape.filter = filter
+        self.lKnee.shape.filter = shapeFilter
 
         self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
         self.lUpperLeg.distance = 40
@@ -388,7 +388,6 @@ class PlayerTwo():
         self.rKnee.shape.body.position = self.torso.shape.body.position + (-25, -100)
         self.rKnee.shape.filter = shapeFilter
 
-
         self.rUpperLeg = pm.PinJoint(self.torso.shape.body, self.rKnee.shape.body, (0, -50), (0, 0))
         self.rUpperLeg.distance = 40
 
@@ -414,7 +413,7 @@ class PlayerTwo():
 
         self.lKnee = DefensiveBlock(self.space, self.screen)
         self.lKnee.shape.body.position = self.torso.shape.body.position + (25, -100)
-        self.lKnee.shape.filter = filter
+        self.lKnee.shape.filter = shapeFilter
 
         self.lUpperLeg = pm.PinJoint(self.torso.shape.body, self.lKnee.shape.body, (0, -50), (0, 0))
         self.lUpperLeg.distance = 40
