@@ -72,13 +72,16 @@ class BodyShape(pm.Poly):
         return True
 
 class Body(PymunkSprite):
-    def __init__(self, space, screen):
+    def __init__(self, space, screen, player):
         vs = [(-25, 50), (25, 50), (25, -50), (-25, -50)]
         mass = 10
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
         shape = BodyShape(space, body, vs)
-        PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox.png", shape)
+        if(player == 1):
+            PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox1.png", shape)
+        else:
+            PymunkSprite.__init__(self, space, screen, "../assets/img/bodyBox2.png", shape)
         self.imageMaster.set_colorkey((0, 0, 0))
 
 
@@ -143,7 +146,7 @@ class PlayerOne():
         self.rightLegAlive = True
         self.leftLegAlive = True
 
-        self.torso = Body(space, screen)
+        self.torso = Body(space, screen, 1)
         self.torso.shape.filter = shapeFilter
         self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
                                                       math.pi / 10)
@@ -359,7 +362,7 @@ class PlayerTwo():
         self.rightLegAlive = True
         self.leftLegAlive = True
 
-        self.torso = Body(space, screen)
+        self.torso = Body(space, screen, 2)
         self.torso.shape.filter = shapeFilter
 
         self.torsoRotationLimit = pm.RotaryLimitJoint(self.space.static_body, self.torso.shape.body, -math.pi / 10,
