@@ -17,3 +17,10 @@ Birth and Death of sprites:
 
 State changes:
     When a player defeats the other, a game end screen declaring the winner is displayed, then the game resets
+
+
+## Language/environment
+
+We choose
+<a href="http://www.pymunk.org/en/latest/">pymunk</a>
+ (a game engine with high-level physics capabilities). pymunk is a built ontop of <a href="https://www.pygame.org/news">pygame</a>
