@@ -96,7 +96,7 @@ class OffensiveBlock(PymunkSprite):
 class DefenseShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 25
+        self.health = 15
         self.collision_type = COLLISION_DEFENSE
         self.soundEffect = pygame.mixer.Sound('../assets/sound/smack.wav')
         # We get a collision handler representation.
