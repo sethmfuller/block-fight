@@ -1,3 +1,5 @@
+# Game Design Doc
+
 Sprites:
     Body block: Yellow ellipse, anchor for arms and legs
     Defensive block: Dark grey circle, elbows and knees
