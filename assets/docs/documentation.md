@@ -23,7 +23,7 @@
     * Add impacts between players
     * Add health values to joints and body
 
-### Iteration 6
+### Iteration 6 Complete
 
     * Add limb-break-off-ability (Complete)
     * Add definite winner
