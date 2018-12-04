@@ -47,7 +47,7 @@ class PymunkSprite():
 class BodyShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 1
+        self.health = 10
         self.collision_type = COLLISION_BODY
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_BODY, COLLISION_OFFENSE)
@@ -89,8 +89,9 @@ class OffensiveBlock(PymunkSprite):
 class DefenseShape(pm.Poly):
     def __init__(self, space, body, points):
         pm.Poly.__init__(self, body, points)
-        self.health = 5
+        self.health = 10
         self.collision_type = COLLISION_DEFENSE
+        self.soundEffect = pygame.mixer.Sound('../assets/sound/smack.wav')
         # We get a collision handler representation.
         handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
 
@@ -498,6 +499,10 @@ class PlayerTwo():
             self.lElbow.update()
             self.lFist.update()
 
+        if self.leftLegAlive:
+            self.lFoot.update()
+            self.lKnee.update()
+
         self.torso.update()
 
         if self.rightArmAlive:
@@ -508,9 +513,7 @@ class PlayerTwo():
             self.rFoot.update()
             self.rKnee.update()
 
-        if self.leftLegAlive:
-            self.lFoot.update()
-            self.lKnee.update()
+
 
     def kickRFoot(self):
         self.rFoot.shape.body.apply_impulse_at_local_point((Vec2d.zero() + (-1, math.sqrt(2) / 2)) * 25000, (0, 0))
