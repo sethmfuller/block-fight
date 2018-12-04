@@ -66,6 +66,27 @@ class OffensiveBlock(PymunkSprite):
         PymunkSprite.__init__(self, space, screen, "../assets/img/hitBox.png", shape)
         self.shape.collision_type = COLLISION_OFFENSE
 
+class DefenseShape(pm.Poly):
+    def __init__(self, space, body, points):
+        pm.Poly.__init__(self, body, points)
+        self.health = 100
+        self.collision_type = COLLISION_DEFENSE
+        # We get a collision handler representation.
+        handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
+
+        # Then we set the collision handler's methods to what we want.
+        handler.begin = self.collisionAction
+        # self.handler.data["def"] = self
+
+    def collisionAction(self, arbiter, space, data):
+        if (arbiter.is_first_contact):
+            a, b = arbiter.shapes
+            a.health = a.health - 1
+            print("Health value: ", a.health)
+            if (a.health == 0):
+                print("Hello there")
+            return True
+
 
 class DefensiveBlock(PymunkSprite):
     def __init__(self, space, screen):
@@ -73,22 +94,11 @@ class DefensiveBlock(PymunkSprite):
         mass = 10
         moment = pm.moment_for_poly(mass, vs)
         body = pm.Body(mass, moment)
-        shape = pm.Poly(body, vs)
+        shape = DefenseShape(space, body, vs)
         PymunkSprite.__init__(self, space, screen, "../assets/img/defBox.png", shape)
-        self.shape.collision_type = COLLISION_DEFENSE
-        self.health = 100
 
-        # We get a collision handler representation.
-        self.handler = space.add_collision_handler(COLLISION_DEFENSE, COLLISION_OFFENSE)
-        # Then we set the collision handler's methods to what we want.
-        self.handler.begin = self.collisionAction
 
-    def collisionAction(self, arbiter, space, data):
-        self.health = self.health - 1
-        print("Health value: ", self.health)
-        if(self.health == 0):
-            print("Hello there")
-        return True
+
 
 
 class PlayerOne():
